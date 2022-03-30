@@ -13,7 +13,7 @@ server {
 		proxy_redirect off;
 		proxy_method POST;
 		set $encoded_rest ?product=123456;
-		proxy_pass http://127.0.0.1:8000/api/order/chargeforuser/$encoded_rest;
+		proxy_pass http://python:8000/api/order/chargeforuser/$encoded_rest;
 		proxy_set_body $request_uri;
 	}
 	location /api/user/wxcommand/ {
@@ -22,7 +22,7 @@ server {
 		proxy_redirect off;
 		proxy_method POST;
 		set $encoded_rest ?product=123456;
-		proxy_pass http://127.0.0.1:8000/api/user/wxcommand/$encoded_rest;
+		proxy_pass http://python:8000/api/user/wxcommand/$encoded_rest;
 		proxy_set_body $request_uri;
 	}
 

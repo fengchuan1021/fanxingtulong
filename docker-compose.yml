@@ -7,6 +7,10 @@ services:
     environment:
       - "DEBUG=0"
     restart: always
+    networks:
+      fanxing:
+        aliases:
+          - python
     expose:
       - "8000"
     ports:
@@ -24,8 +28,13 @@ services:
     volumes:
       - "./nginxtemplates:/etc/nginx/templates"
       - ".:/fanxing"
-
+    networks:
+      fanxing:
+        aliases:
+          - nginx
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
+networks:
+  fanxing:
