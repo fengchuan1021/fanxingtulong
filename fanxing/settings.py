@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-)(-wb%etukow-gq9gjs%kbb%ek-^!9jwzv7uelic_pg5-7-9%4
 # SECURITY WARNING: don't run with debug turned on in production!
 import os
 DEBUG =True if int(os.getenv('DEBUG',1)) else False
-DOMAIN="http://127.0.0.1:8000/"
+DOMAIN="http://47.99.237.132:8080/"
 
 from dotenv import load_dotenv
 #http://127.0.0.1:80/api/order/chargeforuser/?nickname=[买家昵称]&wechatid=[买家标识]&money=[购买金额]&product=[产品名]
