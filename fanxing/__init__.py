@@ -11,7 +11,7 @@ if os.path.exists(os.path.join(BASE_DIR,"static","js")):
     files=os.listdir(os.path.join(BASE_DIR,"static","js"))
 else:
     files=[]
-if os.name!='nt' and settings.DEBUG==True:
+if os.name=='nt' and settings.DEBUG==True:
     rsakey = RSA.importKey(open(os.path.join(BASE_DIR, "rsa_public_key.pem")).read())
     cipher = Cipher_pkcs1_v1_5.new(rsakey)
     ENCLEN=117
