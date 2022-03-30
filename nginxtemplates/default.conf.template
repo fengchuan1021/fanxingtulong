@@ -37,8 +37,8 @@ server {
 	    try_files $uri $uri/ @proxy_to_app =404;
 
     }
-    location / {
-    	  root /fanxing/static;
+    location /static/ {
+    	  root /fanxing;
 	    try_files $uri $uri/ @proxy_to_app =404;
 
     }

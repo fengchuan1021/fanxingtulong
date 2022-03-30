@@ -83,7 +83,8 @@ class UserViewSet(viewsets.ModelViewSet):
             return HttpResponse("请输入正确的绑定信息")
     @action(methods=['get'], detail=False)
     def getuserinfo(self,request):
-
+        if not request.user.is_authenticated:
+            return HttpResponse("{code:-1,username:'请先登录'}")
         ret={"username":request.user.username,"code":"0",
              "wechatid":request.user.profile.wechatid,
              "wechatnickname":request.user.profile.wechatnickname,
