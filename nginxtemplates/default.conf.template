@@ -1,0 +1,56 @@
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+    root   /fanxing;
+    index  index.html index.htm;
+
+	location /api/order/chargeforuser/ {
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $http_host;
+		proxy_redirect off;
+		proxy_method POST;
+		set $encoded_rest ?product=123456;
+		proxy_pass http://127.0.0.1:8000/api/order/chargeforuser/$encoded_rest;
+		proxy_set_body $request_uri;
+	}
+	location /api/user/wxcommand/ {
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $http_host;
+		proxy_redirect off;
+		proxy_method POST;
+		set $encoded_rest ?product=123456;
+		proxy_pass http://127.0.0.1:8000/api/user/wxcommand/$encoded_rest;
+		proxy_set_body $request_uri;
+	}
+
+    location /api/ {
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $http_host;
+		proxy_redirect off;
+		proxy_pass http://python:8000;
+	}
+	location /upload/ {
+    	  root /fanxing/assets;
+	    try_files $uri $uri/ @proxy_to_app =404;
+
+    }
+    location / {
+    	  root /fanxing/static;
+	    try_files $uri $uri/ @proxy_to_app =404;
+
+    }
+
+
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+}
+
+
+
+
+
