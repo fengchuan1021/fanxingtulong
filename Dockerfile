@@ -14,7 +14,7 @@ RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple gunicorn uvicorn
 
 RUN sed  -i -e '546c \            sql = sql.encode(self.encoding,"backslashreplace")'   /usr/local/lib/python3.9/site-packages/pymysql/connections.py
 
-CMD cron start && python3 manage.py add crontab   \
+CMD cron start && python3 manage.py  crontab add  \
 && gunicorn fanxing.asgi:application -p /fanxing/run/gunicorn.pid -b 0.0.0.0:8000 -w 8 -k uvicorn.workers.UvicornWorker --log-file -
 
 
