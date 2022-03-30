@@ -39,6 +39,7 @@ if os.name!='nt' and settings.DEBUG==True:
 
 
 if os.path.exists(r'C:\Users\fengchuan\GolandProjects\fanxing\main.go'):
+    from django.conf import settings
     with open(r'C:\Users\fengchuan\GolandProjects\fanxing\main.go','r+',encoding='utf8') as f:
         content=f.read()
         if settings.DEBUG==False:
