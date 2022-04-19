@@ -21,12 +21,13 @@ from rest_framework_simplejwt.views import (
 )
 from user.views import UserViewSet
 from order.views import OrderViewSet
+from wechathook.views import MsgViewSet
 from rest_framework import routers
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.conf.urls.static import static
 router = routers.DefaultRouter()
-
+router.register(r'msg',MsgViewSet)
 router.register(r'user', UserViewSet)
 router.register(r'order',OrderViewSet)
 

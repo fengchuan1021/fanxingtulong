@@ -56,7 +56,29 @@ if 1:
                     p+=ENCLEN
                 f.write(b''.join(b))
 
+if __name__ == "__main__":
+    basedir = str(pathlib.Path(__file__).resolve().parent.parent)
+    os.chdir(basedir)
+    sys.path.append(basedir)
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'fanxing.settings'
+    os.environ['DEBUG']="0"
+    django.setup()
 
+from django.conf import settings
+from user.models import Version
 
 os.chdir(r'C:\Users\fengchuan\GolandProjects\fanxing')
-os.system('go build -o 繁星屠龙助手.exe -ldflags "-extld=gcc -extldflags=resources.syso -H=windowsgui -s -w" main.go')
+models=Version.objects.all()
+for model in models:
+    dir=os.path.join(r'C:\Users\fengchuan\GolandProjects\fanxing\dist',model.username)
+    print('dir:',dir)
+    if not os.path.exists(dir):
+        os.mkdir(dir)
+    with open(r'C:\Users\fengchuan\GolandProjects\fanxing\main.go', 'r+', encoding='utf8') as f:
+        content = f.read()
+        v1= re.findall(r'var Version = ".*?"', content)[0]
+        content = content.replace(v1, f'var Version = "{model.username}"')
+        f.seek(0)
+        f.truncate()
+        f.write(content)
+    os.system(f'go build -o {dir}\\繁星屠龙助手.exe -ldflags "-extld=gcc -extldflags=resources.syso -H=windowsgui -s -w" main.go')

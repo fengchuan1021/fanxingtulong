@@ -33,7 +33,7 @@ server {
 		proxy_pass http://python:8000;
 	}
 	location /upload/ {
-    	  root /fanxing/assets;
+    	  root /fanxing;
 	    try_files $uri $uri/ @proxy_to_app =404;
 
     }

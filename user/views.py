@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.shortcuts import HttpResponse
 # Create your views here.
+import json
 from rest_framework import routers, serializers, viewsets
 from rest_framework.decorators import action
 from django.conf import settings
@@ -10,6 +11,7 @@ from rest_framework.response import Response
 from Crypto.Cipher import PKCS1_v1_5 as Cipher_pkcs1_v1_5
 import base64,os,json,time,re
 from functools import wraps
+from user.models import Version
 from user.models import Profile
 def localhost(fun):
     @wraps(fun)
@@ -21,7 +23,7 @@ def localhost(fun):
             ipaddress = request.META['REMOTE_ADDR']
         print('ip:',ipaddress)
         if not (ipaddress=='localhost' or ipaddress=='127.0.0.1'):
-            return Response({'code': -1, 'data': "ip地址不在白名单内"})
+            return HttpResponse("{'code': -1, 'data': 'ip地址不在白名单内'}")
         return fun(*args, **kwargs)
     return decorated
 
@@ -81,21 +83,35 @@ class UserViewSet(viewsets.ModelViewSet):
             return HttpResponse("绑定成功!")
         else:
             return HttpResponse("请输入正确的绑定信息")
+    @action(methods=['get','post'], detail=False)
+    def getversion(self,request):
+        version=request.query_params.get('version','fengchuan')
+        print('version:',version)
+        model=Version.objects.filter(username=version).first()
+        if model:
+            ret={'username':model.username,'qq':model.qq,'wechaturl':model.wechaturl}
+            print('ret:',ret)
+            ret=json.dumps(ret)
+            return HttpResponse(ret)
+        else:
+            ret={'username': '请联系管理员', 'qq': '请联系管理员', 'wechaturl':'请联系管理员'}
+            ret = json.dumps(ret)
+            return HttpResponse(ret)
     @action(methods=['get'], detail=False)
     def getuserinfo(self,request):
         if not request.user.is_authenticated:
-            return HttpResponse("{code:-1,username:'请先登录'}")
+            return HttpResponse("{'code':-1,'username':'请先登录'}")
         ret={"username":request.user.username,"code":"0",
              "wechatid":request.user.profile.wechatid,
              "wechatnickname":request.user.profile.wechatnickname,
-             "tulong_endtime":request.user.profile.tulong_endtime.strftime('%Y-%m-%d %H:%M:%S'),
+             "tulong_endtime":request.user.profile.tulong_endtime.strftime('%Y-%m-%d %H:%M:%S') if request.user.profile.tulong_endtime else '',
              "remotetime":int(time.time()),
              "tulongtryflag":request.user.profile.tulongtryflag,
              "tulong_enabled": 1 if request.user.profile.tulong_endtime and request.user.profile.tulong_endtime > datetime.datetime.now() else 0,
              "id":request.user.id,
              }
         if settings.DEBUG:
-            return Response(ret)
+            return HttpResponse(json.dumps(ret))
         else:
             try:
                 rsakey = RSA.importKey(open(os.path.join(settings.BASE_DIR,"rsa_public_key.pem")).read())
@@ -122,17 +138,21 @@ class UserViewSet(viewsets.ModelViewSet):
         username=request.query_params.get('username', '')
         password=request.query_params.get('password', '')
         if not password:
-            return Response({"code":-1,'msg':'密码不能为空'})
+            return HttpResponse('{"code":-1,"msg":"密码不能为空"}')
         if not username:
-            return Response({"code":-1,'msg':'用户名不能为空'})
+            return HttpResponse('{"code":-1,"msg":"用户名不能为空"}')
         u=User.objects.filter(username=username).first()
         if u:
-            return Response({"code":-1,'msg':'用户名已存在'})
+            return HttpResponse('{"code":-1,"msg":"用户名已存在"}')
         u=User()
         u.username=username
         u.set_password(request.query_params.get('password', ''))
+
         u.save()
-        return Response({"code":0,"msg":"注册成功"})
+        u.profile.tulong_endtime=datetime.datetime.now()+datetime.timedelta(days=7)
+        u.profile.tulongtryflag=1
+        u.profile.save()
+        return HttpResponse('{"code":0,"msg":"注册成功"}')
     @localhost
     @action(methods=['get'], detail=False)
     def getuserinfo_debug(self,request):
@@ -147,4 +167,4 @@ class UserViewSet(viewsets.ModelViewSet):
             "tulong_accout_numlimit":request.user.profile.tulong_accout_numlimit,
              "id": request.user.id,
              }
-        return Response(ret)
+        return HttpResponse(json.dumps(ret))

@@ -6,6 +6,8 @@ from pathlib import Path
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5 as Cipher_pkcs1_v1_5
 import base64,os,json
+if os.name=='nt':
+    from django.conf import settings
 BASE_DIR = Path(__file__).resolve().parent.parent
 if os.path.exists(os.path.join(BASE_DIR,"static","js")):
     files=os.listdir(os.path.join(BASE_DIR,"static","js"))
